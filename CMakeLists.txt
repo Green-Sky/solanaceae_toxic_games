@@ -68,6 +68,7 @@ endif()
 add_subdirectory(./src)
 
 if (SOLANACEAE_TOXIC_GAMES_BUILD_PLUGINS)
+	message("II SOLANACEAE_TOXIC_GAMES_BUILD_PLUGINS " ${SOLANACEAE_TOXIC_GAMES_BUILD_PLUGINS})
 	add_subdirectory(./plugins)
 endif()
 

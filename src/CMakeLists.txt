@@ -29,11 +29,14 @@ endif()
 ########################################
 
 add_library(solanaceae_toxic_games
-	./solanaceae_toxic_games.hpp
-	./solanaceae_toxic_games.cpp
+	./solanaceae/toxic_games/toxic_games.hpp
+	./solanaceae/toxic_games/toxic_games.cpp
 )
 
 target_link_libraries(solanaceae_toxic_games PUBLIC
 	solanaceae_tox_contacts
 )
+
+target_include_directories(solanaceae_toxic_games PUBLIC .)
+target_compile_features(solanaceae_toxic_games PUBLIC cxx_std_17)
 
