@@ -31,6 +31,11 @@ endif()
 add_library(solanaceae_toxic_games
 	./solanaceae/toxic_games/toxic_games.hpp
 	./solanaceae/toxic_games/toxic_games.cpp
+
+	./solanaceae/toxic_games/toxic_game_i.hpp
+
+	./solanaceae/toxic_games/games/chess.hpp
+	./solanaceae/toxic_games/games/chess.cpp
 )
 
 target_link_libraries(solanaceae_toxic_games PUBLIC
