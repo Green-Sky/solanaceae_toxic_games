@@ -43,6 +43,30 @@ void ToxicGames::createGame(uint8_t game_type, std::vector<Contact3> with) {
 }
 
 void ToxicGames::acceptInvite(Contact3 from, uint8_t game_type, uint32_t game_id) {
+	if (!_cr.valid(from)) {
+		return;
+	}
+
+	// online gaming
+	if (!_cr.all_of<Contact::Components::ToxFriendEphemeral>(from) && !_cr.all_of<Contact::Components::ToxGroupPeerEphemeral>(from)) {
+		return;
+	}
+
+	// instanciate from invite
+	if (!_game_types.count(game_type)) {
+		return; // error
+	}
+
+	auto& game_type_static = _game_types.at(game_type);
+
+	{
+		auto new_instance = game_type_static->acceptInvite(static_cast<uint32_t>(from), game_id);
+		if (!new_instance) {
+			return; // error
+		}
+
+		_game_instances[game_type][game_id] = std::move(new_instance);
+	}
 }
 
 bool ToxicGames::sendPacket(Contact3 to, uint8_t game_type, uint32_t game_id, const uint8_t* data, const size_t data_size) {
@@ -116,8 +140,37 @@ bool ToxicGames::onToxEvent(const Tox_Event_Friend_Lossless_Packet* e) {
 
 	if (data[0] == 160) {
 		std::cout << "TG: game invite packet gt:" << (uint32_t)game_type << " id:" << game_id << "\n";
+
+		if (_game_types.count(game_type)) {
+			if (!_game_instances[game_type].count(game_id)) {
+				const Contact3 from = _tcm.getContactFriend(friend_number);
+
+				// HACK: auto accept
+				std::cout << "TG: autoaccepting game ...\n";
+				acceptInvite(from, game_type, game_id);
+			} else {
+				std::cerr << "TG error: game invite for existing game id gt:" << (uint32_t)game_type << " id:" << game_id << "\n";
+			}
+		} else {
+			// unknown/unsupported game
+			std::cerr << "TG warning: unknown/unsupported game" << (uint32_t)game_type << "\n";
+		}
+
 	} else if (data[0] == 161) {
 		std::cout << "TG: game packet gt:" << (uint32_t)game_type << " id:" << game_id << "\n";
+
+		if (_game_types.count(game_type)) {
+			if (_game_instances[game_type].count(game_id)) {
+				const Contact3 from = _tcm.getContactFriend(friend_number);
+				_game_instances.at(game_type).at(game_id)->onPacket(static_cast<uint32_t>(from), nullptr, 0);
+			} else {
+				// error, unk game
+				std::cerr << "TG error: packet for unknown game id gt:" << (uint32_t)game_type << " id:" << game_id << "\n";
+			}
+		} else {
+			// unknown/unsupported game
+			std::cerr << "TG warning: unknown/unsupported game" << (uint32_t)game_type << "\n";
+		}
 	}
 
 	return true;
