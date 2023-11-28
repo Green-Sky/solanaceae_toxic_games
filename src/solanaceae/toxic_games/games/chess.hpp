@@ -6,11 +6,17 @@ struct Chess final : public ToxicGameI {
 	Chess(ToxicGames& tg);
 	~Chess(void);
 
+	struct ChessCoords {
+		char L;
+		uint8_t N;
+	};
+
 	struct ChessInstance final : public ToxicGameI::InstanceI {
 		Chess& _game_type_static;
 
-		ChessInstance(Chess& game_type_static, uint32_t game_id);
+		const uint32_t _opponent;
 
+		ChessInstance(Chess& game_type_static, uint32_t opponent, uint32_t game_id);
 		~ChessInstance(void) {}
 
 		// TODO: just destructor?
@@ -24,6 +30,9 @@ struct Chess final : public ToxicGameI {
 		// ??
 		//virtual void tick();
 
+		private:
+			bool sendResign(void);
+			bool sendMove(ChessCoords p0, ChessCoords p1);
 	};
 
 	uint8_t getGameType(void) const override { return 1; };
