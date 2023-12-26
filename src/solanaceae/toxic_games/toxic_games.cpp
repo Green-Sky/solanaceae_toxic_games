@@ -29,9 +29,9 @@ ToxicGames::ToxicGames(
 	}
 
 	// register custom packet handlers
-	_tep.subscribe(this, Tox_Event::TOX_EVENT_FRIEND_LOSSLESS_PACKET);
-	_tep.subscribe(this, Tox_Event::TOX_EVENT_GROUP_CUSTOM_PACKET);
-	_tep.subscribe(this, Tox_Event::TOX_EVENT_GROUP_CUSTOM_PRIVATE_PACKET);
+	_tep.subscribe(this, Tox_Event_Type::TOX_EVENT_FRIEND_LOSSLESS_PACKET);
+	_tep.subscribe(this, Tox_Event_Type::TOX_EVENT_GROUP_CUSTOM_PACKET);
+	_tep.subscribe(this, Tox_Event_Type::TOX_EVENT_GROUP_CUSTOM_PRIVATE_PACKET);
 }
 
 //void ToxicGames::addGameInstance(uint8_t game_type, uint32_t game_id, std::unique_ptr<ToxicGameI::InstanceI> instance) {
