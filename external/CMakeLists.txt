@@ -31,6 +31,7 @@ if (NOT TARGET imgui)
 			${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
 		)
 		target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+		target_compile_features(imgui PUBLIC cxx_std_11)
 	endif()
 endif()
 
