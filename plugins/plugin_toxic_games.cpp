@@ -4,6 +4,7 @@
 #include <solanaceae/toxic_games/toxic_games.hpp>
 
 #include <memory>
+#include <limits>
 #include <iostream>
 
 #define RESOLVE_INSTANCE(x) static_cast<x*>(solana_api->resolveInstance(#x))
@@ -80,10 +81,11 @@ SOLANA_PLUGIN_EXPORT void solana_plugin_stop(void) {
 	g_tg.reset();
 }
 
-SOLANA_PLUGIN_EXPORT void solana_plugin_tick(float delta) {
+SOLANA_PLUGIN_EXPORT float solana_plugin_tick(float delta) {
 	(void)delta;
 	//std::cout << "PLUGIN TG TICK()\n";
 	//g_tg->iterate();
+	return std::numeric_limits<float>::max();
 }
 
 } // extern C
