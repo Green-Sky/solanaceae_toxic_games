@@ -3,6 +3,9 @@
 #include <solanaceae/toxic_games/toxic_games.hpp>
 #include <solanaceae/toxcore/tox_interface.hpp>
 
+#include <entt/entt.hpp>
+#include <entt/fwd.hpp>
+
 #include <memory>
 #include <limits>
 #include <iostream>
