@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
-add_library(plugin_toxic_games SHARED
+add_library(plugin_toxic_games MODULE
 	./plugin_toxic_games.cpp
 )
 
 set_target_properties(plugin_toxic_games PROPERTIES
 	C_VISIBILITY_PRESET hidden
-	POSITION_INDEPENDENT_CODE ON
 )
 target_compile_definitions(plugin_toxic_games PUBLIC ENTT_API_IMPORT)
 
