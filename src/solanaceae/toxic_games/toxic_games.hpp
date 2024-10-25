@@ -16,7 +16,7 @@
 class ToxicGames : public ToxEventI {
 	Contact3Registry& _cr;
 	ToxI& _t;
-	ToxEventProviderI& _tep;
+	ToxEventProviderI::SubscriptionReference _tep_sr;
 	ToxContactModel2& _tcm;
 
 	std::map<uint8_t, std::unique_ptr<ToxicGameI>> _game_types;
