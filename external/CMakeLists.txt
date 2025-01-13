@@ -8,11 +8,12 @@ if (NOT TARGET imgui)
 		GIT_REPOSITORY https://github.com/ocornut/imgui.git
 		GIT_TAG cb16568 # v1.91.3
 		EXCLUDE_FROM_ALL
+		CONFIGURE_COMMAND "" # remove?
 	)
 
 	FetchContent_GetProperties(imgui)
 	if(NOT imgui_POPULATED)
-		FetchContent_Populate(imgui)
+		FetchContent_MakeAvailable(imgui)
 
 		add_library(imgui STATIC
 			${imgui_SOURCE_DIR}/imgui.h
