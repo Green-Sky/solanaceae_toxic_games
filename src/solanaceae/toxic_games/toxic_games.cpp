@@ -1,7 +1,11 @@
 #include "./toxic_games.hpp"
 
 #include <solanaceae/toxcore/tox_interface.hpp>
+#include <solanaceae/contact/contact_store_i.hpp>
 #include <solanaceae/tox_contacts/components.hpp>
+
+#include <entt/entity/registry.hpp>
+#include <entt/entity/handle.hpp>
 
 #include <cstdint>
 #include <iostream>
@@ -11,12 +15,12 @@
 // https://youtu.be/9tLCQQ5_ado
 
 ToxicGames::ToxicGames(
-	Contact3Registry& cr,
+	ContactStore4I& cs,
 	ToxI& t,
 	ToxEventProviderI& tep,
 	ToxContactModel2& tcm
 ) :
-	_cr(cr),
+	_cs(cs),
 	_t(t),
 	_tep_sr(tep.newSubRef(this)),
 	_tcm(tcm)
@@ -41,16 +45,18 @@ ToxicGames::ToxicGames(
 	//_game_instances[game_type][game_id] = std::move(instance);
 //}
 
-void ToxicGames::createGame(uint8_t game_type, std::vector<Contact3> with) {
+void ToxicGames::createGame(uint8_t game_type, std::vector<Contact4> with) {
 }
 
-void ToxicGames::acceptInvite(Contact3 from, uint8_t game_type, uint32_t game_id) {
-	if (!_cr.valid(from)) {
+void ToxicGames::acceptInvite(Contact4 from, uint8_t game_type, uint32_t game_id) {
+	const auto& cr = _cs.registry();
+
+	if (!cr.valid(from)) {
 		return;
 	}
 
 	// online gaming
-	if (!_cr.all_of<Contact::Components::ToxFriendEphemeral>(from) && !_cr.all_of<Contact::Components::ToxGroupPeerEphemeral>(from)) {
+	if (!cr.all_of<Contact::Components::ToxFriendEphemeral>(from) && !cr.all_of<Contact::Components::ToxGroupPeerEphemeral>(from)) {
 		return;
 	}
 
@@ -71,18 +77,20 @@ void ToxicGames::acceptInvite(Contact3 from, uint8_t game_type, uint32_t game_id
 	}
 }
 
-bool ToxicGames::sendPacket(Contact3 to, uint8_t game_type, uint32_t game_id, const uint8_t* data, const size_t data_size) {
-	if (!_cr.valid(to)) {
+bool ToxicGames::sendPacket(Contact4 to, uint8_t game_type, uint32_t game_id, const uint8_t* data, const size_t data_size) {
+	const auto& cr = _cs.registry();
+
+	if (!cr.valid(to)) {
 		return false;
 	}
 
 	// online gaming
-	if (!_cr.all_of<Contact::Components::ToxFriendEphemeral>(to) && !_cr.all_of<Contact::Components::ToxGroupPeerEphemeral>(to)) {
+	if (!cr.all_of<Contact::Components::ToxFriendEphemeral>(to) && !cr.all_of<Contact::Components::ToxGroupPeerEphemeral>(to)) {
 		return false;
 	}
 
 	// friend
-	if (_cr.all_of<Contact::Components::ToxFriendEphemeral>(to)) {
+	if (cr.all_of<Contact::Components::ToxFriendEphemeral>(to)) {
 		std::vector<uint8_t> pkg;
 		pkg.push_back(161); // game data
 		pkg.push_back(0x01); // netver
@@ -94,7 +102,7 @@ bool ToxicGames::sendPacket(Contact3 to, uint8_t game_type, uint32_t game_id, co
 		pkg.insert(pkg.cend(), data, data+data_size);
 
 		const auto send_err = _t.toxFriendSendLosslessPacket(
-			_cr.get<Contact::Components::ToxFriendEphemeral>(to).friend_number,
+			cr.get<Contact::Components::ToxFriendEphemeral>(to).friend_number,
 			pkg
 		);
 
@@ -102,7 +110,7 @@ bool ToxicGames::sendPacket(Contact3 to, uint8_t game_type, uint32_t game_id, co
 	}
 
 	// group peer
-	if (_cr.all_of<Contact::Components::ToxGroupPeerEphemeral>(to)) {
+	if (cr.all_of<Contact::Components::ToxGroupPeerEphemeral>(to)) {
 		return false; // TODO
 	}
 
@@ -145,7 +153,7 @@ bool ToxicGames::onToxEvent(const Tox_Event_Friend_Lossless_Packet* e) {
 
 		if (_game_types.count(game_type)) {
 			if (!_game_instances[game_type].count(game_id)) {
-				const Contact3 from = _tcm.getContactFriend(friend_number);
+				const auto from = _tcm.getContactFriend(friend_number);
 
 				// HACK: auto accept
 				std::cout << "TG: autoaccepting game ...\n";
@@ -163,8 +171,8 @@ bool ToxicGames::onToxEvent(const Tox_Event_Friend_Lossless_Packet* e) {
 
 		if (_game_types.count(game_type)) {
 			if (_game_instances[game_type].count(game_id)) {
-				const Contact3 from = _tcm.getContactFriend(friend_number);
-				_game_instances.at(game_type).at(game_id)->onPacket(static_cast<uint32_t>(from), nullptr, 0);
+				const auto from = _tcm.getContactFriend(friend_number);
+				_game_instances.at(game_type).at(game_id)->onPacket(static_cast<uint32_t>(entt::to_integral(from.entity())), nullptr, 0);
 			} else {
 				// error, unk game
 				std::cerr << "TG error: packet for unknown game id gt:" << (uint32_t)game_type << " id:" << game_id << "\n";

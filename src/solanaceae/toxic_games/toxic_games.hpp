@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include <solanaceae/contact/contact_model3.hpp>
+#include <solanaceae/contact/fwd.hpp>
 #include <solanaceae/tox_contacts/tox_contact_model2.hpp>
 
 #include "./toxic_game_i.hpp"
@@ -14,7 +14,7 @@
 // got invite
 
 class ToxicGames : public ToxEventI {
-	Contact3Registry& _cr;
+	ContactStore4I& _cs;
 	ToxI& _t;
 	ToxEventProviderI::SubscriptionReference _tep_sr;
 	ToxContactModel2& _tcm;
@@ -24,7 +24,7 @@ class ToxicGames : public ToxEventI {
 
 	public:
 		ToxicGames(
-			Contact3Registry& cr,
+			ContactStore4I& cs,
 			ToxI& t,
 			ToxEventProviderI& tep,
 			ToxContactModel2& tcm
@@ -34,12 +34,12 @@ class ToxicGames : public ToxEventI {
 
 	public:
 		// TODO: a setup game, for configurability?
-		void createGame(uint8_t game_type, std::vector<Contact3> with);
+		void createGame(uint8_t game_type, std::vector<Contact4> with);
 		// with (contact list) ?
-		void acceptInvite(Contact3 from, uint8_t game_type, uint32_t game_id);
+		void acceptInvite(Contact4 from, uint8_t game_type, uint32_t game_id);
 
 	public: // internal, for games (TODO: extract?)
-		bool sendPacket(Contact3 to, uint8_t game_type, uint32_t game_id, const uint8_t* data, const size_t data_size);
+		bool sendPacket(Contact4 to, uint8_t game_type, uint32_t game_id, const uint8_t* data, const size_t data_size);
 
 	private: // tox events
 		bool onToxEvent(const Tox_Event_Friend_Lossless_Packet* e) override;

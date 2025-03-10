@@ -32,14 +32,14 @@ SOLANA_PLUGIN_EXPORT uint32_t solana_plugin_start(struct SolanaAPI* solana_api) 
 	}
 
 	try {
-		auto* cr = PLUG_RESOLVE_INSTANCE_VERSIONED(Contact3Registry, "1");
+		auto* cs = PLUG_RESOLVE_INSTANCE(ContactStore4I);
 		auto* t = PLUG_RESOLVE_INSTANCE(ToxI);
 		auto* tep = PLUG_RESOLVE_INSTANCE(ToxEventProviderI);
 		auto* tcm = PLUG_RESOLVE_INSTANCE(ToxContactModel2);
 
 		// static store, could be anywhere tho
 		// construct with fetched dependencies
-		g_tg = std::make_unique<ToxicGames>(*cr, *t, *tep, *tcm);
+		g_tg = std::make_unique<ToxicGames>(*cs, *t, *tep, *tcm);
 
 		// register types
 		PLUG_PROVIDE_INSTANCE(ToxicGames, plugin_name, g_tg.get());

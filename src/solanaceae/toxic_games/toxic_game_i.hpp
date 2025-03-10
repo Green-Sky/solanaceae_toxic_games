@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-//#include <solanaceae/contact/contact_model3.hpp>
-//enum class Contact3 : uint32_t {};
+//#include <solanaceae/contact/fwd.hpp>
+//enum class Contact4 : uint32_t {};
 
 // fwd
 class ToxicGames;
@@ -35,6 +35,7 @@ struct ToxicGameI {
 		//  - invalid
 		virtual bool allInvitesAccepted(void) = 0;
 
+		// TODO: contact
 		virtual void onPacket(uint32_t from, const uint8_t* data, const uint32_t data_size) = 0;
 
 		// ??
