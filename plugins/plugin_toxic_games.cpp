@@ -1,5 +1,7 @@
 #include <solanaceae/plugin/solana_plugin_v1.h>
 
+#include <solanaceae/contact/contact_store_i.hpp>
+
 #include <solanaceae/toxic_games/toxic_games.hpp>
 #include <solanaceae/toxcore/tox_interface.hpp>
 
