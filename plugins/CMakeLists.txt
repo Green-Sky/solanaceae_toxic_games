@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18...3.24 FATAL_ERROR)
 
 add_library(plugin_toxic_games MODULE
 	./plugin_toxic_games.cpp
